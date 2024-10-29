@@ -33,7 +33,7 @@ public struct CoordinatorView<CoordinatorInterface: CoordinatorProtocol>: View {
           AnyView($0.makeView())
         }
         .sheet(item: $coordinator.sheet, content: handleModal)
-//        .fullScreenCover(item: $coordinator.fullScreeCover, content: handleModal)
+        .fullScreenCover(item: $coordinator.fullScreeCover, content: handleModal)
     }
     .environmentObject(coordinator)
     .onAppear {
