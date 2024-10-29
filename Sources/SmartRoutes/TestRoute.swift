@@ -3,23 +3,31 @@
 //
 
 import Foundation
+import SwiftUI
 
-//struct LoginRoute: Route {
-//  let id = UUID()
-//  
-//  @MainActor
-//  func makeView() -> some View {
-//    VStack {
-//      Text("Hello world")
-//    }
-//  }
-//}
-//
-//
-//extension Route {
-//  static func login(state: AppState) -> LoginRoute {
-//    LoginRoute(state: state)
-//  }
-//}
+struct LoginRoute: Route {
+  var presentConfiguration: PresentConfiguration?
+  
+  let id = UUID()
+  
+  @MainActor
+  func makeView() -> some View {
+    TextView()
+  }
+}
+
+struct TextView: View {
+  var body: some View {
+    VStack {
+      Text("Hello world")
+    }
+  }
+}
+
+extension Route {
+  static func login() -> LoginRoute {
+    LoginRoute()
+  }
+}
 
 

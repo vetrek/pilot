@@ -25,7 +25,7 @@ public extension Route {
   }
 }
 
-public enum PresentConfiguration {
+public enum PresentConfiguration: Sendable {
   case fullScreen(navigable: Bool = false)
   case sheet(navigable: Bool = false, detents: Set<PresentationDetent>? = nil)
 }
