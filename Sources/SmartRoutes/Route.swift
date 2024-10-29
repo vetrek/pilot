@@ -6,7 +6,7 @@ public protocol Route: Hashable, Identifiable, Sendable {
   var id: UUID { get }
   var presentConfiguration: PresentConfiguration? { get set }
   
-  @ViewBuilder @MainActor func makeView() -> any View
+  @ViewBuilder @MainActor func makeView() -> Body
 }
 
 public extension Route {
