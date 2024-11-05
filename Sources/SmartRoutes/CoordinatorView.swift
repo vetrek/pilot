@@ -13,7 +13,7 @@ public struct CoordinatorView<CoordinatorInterface: CoordinatorProtocol>: View {
   
   /// Initializes a `CoordinatorView` with a closure generating the content.
   /// - Parameter content: A closure that returns an `AnyView`.
-  init(coordinator: CoordinatorInterface, content: @escaping () -> AnyView) {
+  public init(coordinator: CoordinatorInterface, content: @escaping () -> AnyView) {
     self.content = content
     self.coordinator = coordinator
   }
