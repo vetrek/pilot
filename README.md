@@ -25,7 +25,7 @@ With **Pathway**, you can handle navigation stacks, modals, and full-screen cove
 2. Go to **File > Add Packages...**.
 3. Enter the repository URL:
    ```
-   https://github.com/yourusername/Pathway
+   https://github.com/vetrek/smart-routes
    ```
 4. Select the latest version and add it to your project.
 
