@@ -74,43 +74,43 @@ final public class Coordinator: ObservableObject {
       return
     }
     
-    var targetIndex = 0 // Default to root unless otherwise specified
-    
     switch destination {
     case .root:
-      targetIndex = 0
+      // Clear the navigation path entirely as we rely on the root reference
+      path.removeAll()
+      pushDismissCallbacks.removeAll()
       
     case .back:
-      targetIndex = max(path.count - 2, 0)
+      let targetIndex = max(path.count - 2, 0)
+      removeElements(from: targetIndex)
       
     case .route(let finder):
       guard let index = finder(path.compactMap { $0.route }) else {
         print("Route not found in the path.")
         return
       }
-      targetIndex = index
+      removeElements(from: index)
       
     case .index(let index):
       guard index >= 0 && index < path.count else {
         print("Index out of bounds for index-based pop.")
         return
       }
-      targetIndex = index
+      removeElements(from: index)
     }
-    
-    // Calculate the number of elements to remove
+  }
+  
+  /// Helper function to remove elements from the path and invoke their dismissal callbacks.
+  /// - Parameter targetIndex: The index to retain up to, removing the rest.
+  private func removeElements(from targetIndex: Int) {
     let elementsToRemove = path.count - targetIndex - 1
     
     guard elementsToRemove > 0 else { return }
     
-    // Remove the callbacks for the views being popped
     let callbacksToInvoke = pushDismissCallbacks.suffix(elementsToRemove)
     pushDismissCallbacks.removeLast(elementsToRemove)
-    
-    // Remove the views from the path
     path.removeLast(elementsToRemove)
     
-    // Invoke the dismissal callbacks
     callbacksToInvoke.forEach { $0() }
   }
   
