@@ -1,5 +1,5 @@
 
-# Pathway 📍
+# Pathway
 
 **Pathway** is a lightweight, type-safe, and modular navigation library for SwiftUI. It simplifies complex navigation flows while ensuring your code stays clean, reusable, and maintainable.
 
