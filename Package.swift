@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "swift-navigation-routes",
+    name: "smart-routes",
     platforms: [
       .iOS(.v16),
       .macOS(.v10_15)
