@@ -21,13 +21,11 @@ With **Pathway**, you can handle navigation stacks, modals, and full-screen cove
 
 ### Swift Package Manager
 
-1. Open your project in Xcode.
-2. Go to **File > Add Packages...**.
-3. Enter the repository URL:
-   ```
-   https://github.com/vetrek/smart-routes
-   ```
-4. Select the latest version and add it to your project.
+To use the Pathway library in a SwiftPM project, add the following line to the dependencies in your Package.swift file:
+
+```
+.package(url: "https://github.com/vetrek/pathway", from: "1.0.1"),
+```
 
 ---
 
