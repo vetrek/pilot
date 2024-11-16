@@ -45,7 +45,7 @@ import Pathway
 struct YourApp: App {
     var body: some Scene {
         WindowGroup {
-            CoordinatorView(coordinator: Coordinator(root: .login()))
+            CoordinatorView(coordinator: Coordinator(root: .login))
         }
     }
 }
@@ -60,26 +60,31 @@ import SwiftUI
 import Pathway
 
 struct LoginRoute: Destination {
-    var id = UUID()
-    
-    @MainActor
-    func makeView() -> some View {
-        TextView()
-    }
+  let id = UUID()
+  
+  @MainActor
+  func makeView() -> some View {
+    LoginView()
+  }
 }
 
-struct TextView: View {
-    var body: some View {
-        VStack {
-            Text("Hello world")
-        }
+struct LoginView: View {
+  @EnvironmentObject private var coordinator: Coordinator
+  
+  var body: some View {
+    VStack {
+      Text("Welcome to Pathway!")
+      Button("Next") {
+        coordinator.push(.anotherRoute)
+      }
     }
+  }
 }
 
-extension Destination {
-    static func login() -> LoginRoute {
-        LoginRoute()
-    }
+extension Destination where Self == LoginRoute {
+  static var login: Self {
+    LoginRoute()
+  }
 }
 ```
 
@@ -89,7 +94,7 @@ extension Destination {
 To navigate to a new screen:
 
 ```swift
-coordinator.push(.login()) {
+coordinator.push(.login) {
     print("Login screen dismissed")
 }
 ```
@@ -98,7 +103,7 @@ coordinator.push(.login()) {
 To present a sheet or full-screen modal:
 
 ```swift
-coordinator.present(.login(), presentConfiguration: .sheet(navigable: true)) {
+coordinator.present(.login, presentConfiguration: .sheet(navigable: true)) {
     print("Sheet dismissed")
 }
 ```
@@ -138,8 +143,8 @@ coordinator.pop(.root)
 You can create nested navigation flows by assigning a `parentCoordinator`:
 
 ```swift
-let parentCoordinator = Coordinator(root: .login())
-let childCoordinator = Coordinator(parentCoordinator: parentCoordinator, root: .login())
+let parentCoordinator = Coordinator(root: .login)
+let childCoordinator = Coordinator(parentCoordinator: parentCoordinator, root: .login)
 
 CoordinatorView(coordinator: childCoordinator)
 ```
@@ -174,49 +179,54 @@ import Pathway
 struct ExampleApp: App {
     var body: some Scene {
         WindowGroup {
-            CoordinatorView(coordinator: Coordinator(root: .login()))
+            CoordinatorView(coordinator: Coordinator(root: .login))
         }
     }
 }
 
 struct LoginRoute: Destination {
-    let id = UUID()
-    
-    @MainActor
-    func makeView() -> some View {
-        TextView()
-    }
+  let id = UUID()
+  
+  @MainActor
+  func makeView() -> some View {
+    LoginView()
+  }
 }
 
-struct TextView: View {
-    var body: some View {
-        VStack {
-            Text("Welcome to Pathway!")
-            Button("Next") {
-                coordinator.push(.nextScreen())
-            }
-        }
+struct LoginView: View {
+  @EnvironmentObject private var coordinator: Coordinator
+  
+  var body: some View {
+    VStack {
+      Text("Welcome to Pathway!")
+      Button("Next") {
+        coordinator.push(.anotherRoute)
+      }
     }
+  }
 }
 
-extension Destination {
-    static func login() -> LoginRoute {
-        LoginRoute()
-    }
-    
-    static func nextScreen() -> AnotherRoute {
-        AnotherRoute()
-    }
+extension Destination where Self == LoginRoute {
+  static var login: Self {
+    LoginRoute()
+  }
 }
 
 struct AnotherRoute: Destination {
-    let id = UUID()
-    
-    @MainActor
-    func makeView() -> some View {
-        Text("This is another screen!")
-    }
+  let id = UUID()
+  
+  @MainActor
+  func makeView() -> some View {
+    Text("This is another screen!")
+  }
 }
+
+extension Destination where Self == AnotherRoute {
+  static var anotherRoute: Self {
+    AnotherRoute()
+  }
+}
+
 ```
 
 ---
