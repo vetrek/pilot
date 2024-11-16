@@ -4,7 +4,6 @@ public protocol Route: Hashable, Identifiable, Sendable {
   associatedtype Body: View
   
   var id: UUID { get }
-  var presentConfiguration: PresentConfiguration? { get set }
   
   @ViewBuilder @MainActor func makeView() -> Body
 }
@@ -17,24 +16,11 @@ public extension Route {
   func hash(into hasher: inout Hasher) {
     hasher.combine(id)
   }
-  
-  func presentConfiguration(_ config: PresentConfiguration) -> Self {
-    var newInstance = self
-    newInstance.presentConfiguration = config
-    return newInstance
-  }
 }
-
-public enum PresentConfiguration: Sendable {
-  case fullScreen(navigable: Bool = false)
-  case sheet(navigable: Bool = false, detents: Set<PresentationDetent>? = nil)
-}
-
 
 // Type-Erased Wrapper for Route
 public struct AnyRoute: Identifiable {
   public var id: UUID
-  public var presentConfiguration: PresentConfiguration?
   
   private let _makeView: @MainActor () -> AnyView
   private let _hash: (inout Hasher) -> Void
@@ -45,7 +31,6 @@ public struct AnyRoute: Identifiable {
   public init<R: Route>(_ route: R) {
     self.route = route
     self.id = route.id
-    self.presentConfiguration = route.presentConfiguration
     self._makeView = {
       AnyView(route.makeView())
     }
@@ -74,4 +59,3 @@ extension AnyRoute: Hashable {
     _hash(&hasher)
   }
 }
-

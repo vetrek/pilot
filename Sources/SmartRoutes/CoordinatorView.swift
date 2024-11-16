@@ -1,27 +1,26 @@
 import SwiftUI
 
 /// A SwiftUI `View` that uses a `Coordinator` for navigation and presentation logic.
-public struct CoordinatorView<CoordinatorInterface: CoordinatorProtocol>: View {
+public struct CoordinatorView: View {
   /// Holds the state for the coordinator.
-  @ObservedObject var coordinator: CoordinatorInterface
+  @ObservedObject var coordinator: Coordinator
   
   /// An optional reference to a parent coordinator.
-  private var parentCoordinator: CoordinatorInterface?
+  private var parentCoordinator: Coordinator?
   
   /// A closure that generates the content view.
   let content: () -> AnyView
   
   /// Initializes a `CoordinatorView` with a closure generating the content.
   /// - Parameter content: A closure that returns an `AnyView`.
-  public init(coordinator: CoordinatorInterface, content: @escaping () -> AnyView) {
+  public init(coordinator: Coordinator, content: @escaping () -> AnyView) {
     self.content = content
     self.coordinator = coordinator
   }
   
   /// Private initializer with an optional parent coordinator.
-  private init(parentCoordinator: CoordinatorInterface, content: @escaping () -> AnyView) {
-    self.content = content
-    self.coordinator = .init(parentCoordinator: nil)
+  private init(parentCoordinator: Coordinator, content: @escaping () -> AnyView) {
+    self.init(coordinator: .init(parentCoordinator: nil), content: content)
     self.parentCoordinator = parentCoordinator
   }
   
@@ -33,7 +32,7 @@ public struct CoordinatorView<CoordinatorInterface: CoordinatorProtocol>: View {
           AnyView($0.makeView())
         }
         .sheet(item: $coordinator.sheet, content: handleModal)
-        .fullScreenCover(item: $coordinator.fullScreeCover, content: handleModal)
+        .fullScreenCover(item: $coordinator.fullScreenCover, content: handleModal)
     }
     .environmentObject(coordinator)
     .onAppear {
@@ -43,7 +42,7 @@ public struct CoordinatorView<CoordinatorInterface: CoordinatorProtocol>: View {
   
   @ViewBuilder
   private func handleModal(route: AnyRoute) -> some View {
-    switch route.presentConfiguration {
+    switch coordinator.presentConfigurations[route] {
     case .fullScreen(let navigable):
       if navigable {
         CoordinatorView(parentCoordinator: coordinator) {
