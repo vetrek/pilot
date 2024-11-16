@@ -5,7 +5,7 @@
 import Foundation
 import SwiftUI
 
-struct LoginRoute: Route {
+struct LoginRoute: Destination {
   var presentConfiguration: PresentConfiguration?
   
   let id = UUID()
@@ -24,7 +24,7 @@ struct TextView: View {
   }
 }
 
-extension Route {
+extension Destination {
   static func login() -> LoginRoute {
     LoginRoute()
   }

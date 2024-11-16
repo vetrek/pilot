@@ -1,6 +1,6 @@
 import SwiftUI
 
-public protocol Route: Hashable, Identifiable, Sendable {
+public protocol Destination: Sendable {
   associatedtype Body: View
   
   var id: UUID { get }
@@ -8,7 +8,7 @@ public protocol Route: Hashable, Identifiable, Sendable {
   @ViewBuilder @MainActor func makeView() -> Body
 }
 
-public extension Route {
+public extension Destination {
   static func == (lhs: Self, rhs: Self) -> Bool {
     lhs.id == rhs.id
   }
@@ -19,16 +19,16 @@ public extension Route {
 }
 
 // Type-Erased Wrapper for Route
-public struct AnyRoute: Identifiable {
+public struct AnyDestination: Identifiable {
   public var id: UUID
   
   private let _makeView: @MainActor () -> AnyView
   private let _hash: (inout Hasher) -> Void
-  private let _equals: (Any) -> Bool
+  private let _equals: (AnyDestination) -> Bool
   
-  let route: any Route
+  let route: any Destination
   
-  public init<R: Route>(_ route: R) {
+  public init<R: Destination>(_ route: R) {
     self.route = route
     self.id = route.id
     self._makeView = {
@@ -38,23 +38,23 @@ public struct AnyRoute: Identifiable {
       route.hash(into: &hasher)
     }
     self._equals = { other in
-      guard let otherRoute = other as? R else { return false }
+      guard let otherRoute = other.route as? R else { return false }
       return route == otherRoute
     }
   }
   
-  @ViewBuilder @MainActor public func makeView() -> some View {
+  @ViewBuilder @MainActor public func makeView() -> AnyView {
     _makeView()
   }
 }
 
-extension AnyRoute: Equatable {
-  public static func == (lhs: AnyRoute, rhs: AnyRoute) -> Bool {
+extension AnyDestination: Equatable {
+  public static func == (lhs: AnyDestination, rhs: AnyDestination) -> Bool {
     lhs._equals(rhs)
   }
 }
 
-extension AnyRoute: Hashable {
+extension AnyDestination: Hashable {
   public func hash(into hasher: inout Hasher) {
     _hash(&hasher)
   }

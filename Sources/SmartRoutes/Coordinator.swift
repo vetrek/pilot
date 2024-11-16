@@ -6,14 +6,16 @@ import SwiftUI
 @MainActor
 final public class Coordinator: ObservableObject {
   
+  @Published public var root: AnyDestination
+  
   /// Holds the current navigation path of the application.
-  @Published public var path = [AnyRoute]()
+  @Published public var path = [AnyDestination]()
   
   /// Represents the sheet (modal view) that is currently being displayed.
-  @Published public var sheet: AnyRoute?
+  @Published public var sheet: AnyDestination?
   
   /// Represents a full-screen modal cover currently being displayed.
-  @Published public var fullScreenCover: AnyRoute?
+  @Published public var fullScreenCover: AnyDestination?
   
   /// Track the lastly presented Route
   private var lastPresentedRouteUID: UUID?
@@ -31,12 +33,17 @@ final public class Coordinator: ObservableObject {
   private var fullScreenDismissCallbacks = [() -> Void]()
   
   /// Stores configuration for presented routes.
-  lazy var presentConfigurations = [AnyRoute: PresentConfiguration]()
+  lazy var presentConfigurations = [AnyDestination: PresentConfiguration]()
+  
+  public init(root: any Destination) {
+    self.root = AnyDestination(root)
+  }
   
   /// Initializes a new coordinator instance.
   /// - Parameter parentCoordinator: An optional parent coordinator.
-  init(parentCoordinator: Coordinator? = nil) {
+  init(parentCoordinator: Coordinator? = nil, root: any Destination) {
     self.parentCoordinator = parentCoordinator
+    self.root = AnyDestination(root)
   }
   
   /// Returns the number of pages in the navigation stack.
@@ -55,8 +62,8 @@ final public class Coordinator: ObservableObject {
   /// - Parameters:
   ///   - page: The page to be pushed.
   ///   - onDismiss: A closure to be called when the page is popped.
-  public func push(_ route: some Route, onDismiss: (() -> Void)? = nil) {
-    path.append(AnyRoute(route))
+  public func push(_ route: some Destination, onDismiss: (() -> Void)? = nil) {
+    path.append(AnyDestination(route))
     pushDismissCallbacks.append(onDismiss ?? {})
   }
   
@@ -114,11 +121,13 @@ final public class Coordinator: ObservableObject {
   ///   - sheet: The sheet to be presented.
   ///   - onDismiss: A closure to be called when the sheet is dismissed.
   public func present(
-    _ route: some Route,
+    _ route: some Destination,
     presentConfiguration: PresentConfiguration = .sheet(navigable: false, detents: nil),
     onDismiss: (() -> Void)? = nil
   ) {
-    let anyRoute = AnyRoute(route)
+    let anyRoute = AnyDestination(route)
+    presentConfigurations[anyRoute] = presentConfiguration
+    lastPresentedRouteUID = anyRoute.id
     
     switch presentConfiguration {
     case .fullScreen:
@@ -128,8 +137,6 @@ final public class Coordinator: ObservableObject {
       sheet = anyRoute
       sheetDismissCallbacks.append(onDismiss ?? {})
     }
-    presentConfigurations[anyRoute] = presentConfiguration
-    lastPresentedRouteUID = anyRoute.id
   }
   
   /// Dismisses the currently presented sheet.
