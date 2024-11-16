@@ -235,4 +235,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Support 💬
 
-For questions or support, feel free to open an issue or contact me on [GitHub](https://github.com/yourusername).
+For questions or support, feel free to open an issue or contact me on [GitHub](https://github.com/vetrek).
