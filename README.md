@@ -136,19 +136,6 @@ coordinator.pop(.root)
 
 ---
 
-## Advanced Usage 🌟
-
-### Nested Coordinators
-
-You can create nested navigation flows by assigning a `parentCoordinator`:
-
-```swift
-let parentCoordinator = Coordinator(root: .login)
-let childCoordinator = Coordinator(parentCoordinator: parentCoordinator, root: .login)
-
-CoordinatorView(coordinator: childCoordinator)
-```
-
 ### Custom Pop Logic
 
 Pop to a specific route using a custom finder:
