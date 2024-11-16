@@ -86,6 +86,11 @@ final public class Coordinator: ObservableObject {
       
     case .back:
       let targetIndex = max(path.count - 2, 0)
+      guard targetIndex > 0 else {
+        pop(.root)
+        return
+      }
+      
       removeElements(from: targetIndex)
       
     case .route(let finder):
@@ -100,6 +105,11 @@ final public class Coordinator: ObservableObject {
         print("Index out of bounds for index-based pop.")
         return
       }
+      guard index > 0 else {
+        pop(.root)
+        return
+      }
+      
       removeElements(from: index)
     }
   }
