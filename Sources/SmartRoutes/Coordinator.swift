@@ -1,11 +1,11 @@
 import Foundation
 import SwiftUI
 
-/// `Coordinator` is a class responsible for managing the navigation and
-/// presentation logic in the application.
+/// `Coordinator` is a class responsible for managing the navigation and presentation logic in the application.
 @MainActor
 final public class Coordinator: ObservableObject {
   
+  /// Holds the root destination of the application.
   @Published public var root: AnyDestination
   
   /// Holds the current navigation path of the application.
@@ -35,12 +35,16 @@ final public class Coordinator: ObservableObject {
   /// Stores configuration for presented routes.
   lazy var presentConfigurations = [AnyDestination: PresentConfiguration]()
   
+  /// Initializes the coordinator with a root destination.
+  /// - Parameter root: The initial root destination.
   public init(root: any Destination) {
     self.root = AnyDestination(root)
   }
   
-  /// Initializes a new coordinator instance.
-  /// - Parameter parentCoordinator: An optional parent coordinator.
+  /// Initializes a new coordinator with an optional parent and root destination.
+  /// - Parameters:
+  ///   - parentCoordinator: Optional parent coordinator.
+  ///   - root: The initial root destination.
   init(parentCoordinator: Coordinator? = nil, root: any Destination) {
     self.parentCoordinator = parentCoordinator
     self.root = AnyDestination(root)
@@ -179,6 +183,17 @@ final public class Coordinator: ObservableObject {
     }
     
     parentCoordinator?.dismissAll()
+  }
+  
+  /// Updates the root destination and optionally clears the navigation stack.
+  /// - Parameters:
+  ///   - root: The new root destination.
+  ///   - popAll: Whether to clear the stack.
+  public func setRoot(_ root: any Destination, popAll: Bool = false) {
+    self.root = AnyDestination(root)
+    if popAll {
+      pop(.root)
+    }
   }
   
 }
