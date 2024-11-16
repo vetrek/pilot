@@ -43,11 +43,11 @@ import Pathway
 
 @main
 struct YourApp: App {
-    var body: some Scene {
-        WindowGroup {
-            CoordinatorView(coordinator: Coordinator(root: .login))
-        }
+  var body: some Scene {
+    WindowGroup {
+      CoordinatorView(coordinator: Coordinator(root: .login))
     }
+  }
 }
 ```
 
@@ -95,7 +95,7 @@ To navigate to a new screen:
 
 ```swift
 coordinator.push(.login) {
-    print("Login screen dismissed")
+  print("Login screen dismissed")
 }
 ```
 
@@ -104,7 +104,7 @@ To present a sheet or full-screen modal:
 
 ```swift
 coordinator.present(.login, presentConfiguration: .sheet(navigable: true)) {
-    print("Sheet dismissed")
+  print("Sheet dismissed")
 }
 ```
 
@@ -155,7 +155,7 @@ Pop to a specific route using a custom finder:
 
 ```swift
 coordinator.pop(.route { path in
-    path.firstIndex(where: { $0.route is LoginRoute })
+   path.firstIndex(where: { $0.route is LoginRoute })
 })
 ```
 
@@ -177,10 +177,10 @@ import Pathway
 
 @main
 struct ExampleApp: App {
-    var body: some Scene {
-        WindowGroup {
-            CoordinatorView(coordinator: Coordinator(root: .login))
-        }
+  var body: some Scene {
+      WindowGroup {
+         CoordinatorView(coordinator: Coordinator(root: .login))
+      }
     }
 }
 
