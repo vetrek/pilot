@@ -206,26 +206,11 @@ final public class Coordinator: ObservableObject {
     }
   }
   
-  /// Checks if the navigation path, sheet, or full-screen cover contains a destination of the given type.
+  /// Checks if the navigation path contains a destination of the given type.
   /// - Parameter type: The type of the destination to check for.
   /// - Returns: A boolean indicating whether a destination of the given type exists.
   public func contains<T: Destination>(_ type: T.Type) -> Bool {
-    // Check if the navigation path contains a destination of the specified type.
-    if path.contains(where: { $0.route is T }) {
-      return true
-    }
-    
-    // Check if the currently presented sheet is of the specified type.
-    if let sheet = sheet, sheet.route is T {
-      return true
-    }
-    
-    // Check if the currently presented full-screen cover is of the specified type.
-    if let fullScreenCover = fullScreenCover, fullScreenCover.route is T {
-      return true
-    }
-    
-    return false
+    path.contains(where: { $0.route is T })
   }
   
 }
