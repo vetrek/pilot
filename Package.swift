@@ -4,25 +4,26 @@
 import PackageDescription
 
 let package = Package(
-    name: "smart-routes",
-    platforms: [
-      .iOS(.v16),
-      .macOS(.v10_15)
-    ],
-    products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "SmartRoutes",
-            targets: ["SmartRoutes"]),
-    ],
-    targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
-        .target(
-            name: "SmartRoutes"),
-        .testTarget(
-            name: "SmartRoutesTests",
-            dependencies: ["SmartRoutes"]
-        ),
-    ]
+  name: "Pilot",
+  platforms: [
+    .iOS(.v16),
+    .macOS(.v10_15)
+  ],
+  products: [
+    // Products define the executables and libraries a package produces, making them visible to other packages.
+    .library(
+      name: "Pilot",
+      targets: ["Pilot"]),
+  ],
+  targets: [
+    // Targets are the basic building blocks of a package, defining a module or a test suite.
+    // Targets can depend on other targets in this package and products from dependencies.
+    .target(
+      name: "Pilot"
+    ),
+    .testTarget(
+      name: "PilotTests",
+      dependencies: ["Pilot"]
+    ),
+  ]
 )

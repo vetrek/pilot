@@ -1,5 +1,5 @@
 import Testing
-@testable import SmartRoutes
+@testable import Pilot
 import XCTest
 import SwiftUI
 
