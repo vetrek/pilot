@@ -12,7 +12,6 @@ With **Pathway**, you can handle navigation stacks, modals, and full-screen cove
 - **Centralized Navigation Logic**: Manage navigation stack, sheets, and full-screen modals from a single `Coordinator`.
 - **Type-Safe Destinations**: Define navigation destinations using the `Destination` protocol for strongly typed and reusable routes.
 - **Flexible Presentation Styles**: Support for both `sheet` and `fullScreen` configurations with customizable detents.
-- **Nested Coordinators**: Easily handle complex flows with parent-child coordinator relationships.
 - **Dismissal Callbacks**: Execute specific actions when navigation views are dismissed.
 
 ---
