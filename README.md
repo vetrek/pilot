@@ -23,7 +23,7 @@ With **Pathway**, you can handle navigation stacks, modals, and full-screen cove
 To use the Pathway library in a SwiftPM project, add the following line to the dependencies in your Package.swift file:
 
 ```
-.package(url: "https://github.com/vetrek/pathway", from: "1.0.1"),
+.package(url: "https://github.com/vetrek/pilot", from: "1.0.1"),
 ```
 
 ---
