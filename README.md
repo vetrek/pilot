@@ -138,9 +138,7 @@ coordinator.pop(.root)
 Pop to a specific route using a custom finder:
 
 ```swift
-coordinator.pop(.route { path in
-   path.firstIndex(where: { $0.route is LoginRoute })
-})
+coordinator.pop(.destination(LoginRoute.self))
 ```
 
 Pop to a specific index:
