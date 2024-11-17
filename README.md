@@ -1,9 +1,9 @@
 
-# Pathway
+# Pilot
 
-**Pathway** is a lightweight, type-safe, and modular navigation library for SwiftUI. It simplifies complex navigation flows while ensuring your code stays clean, reusable, and maintainable.
+**Pilot** is a lightweight, type-safe, and modular navigation library for SwiftUI. It simplifies complex navigation flows while ensuring your code stays clean, reusable, and maintainable.
 
-With **Pathway**, you can handle navigation stacks, modals, and full-screen covers seamlessly. Whether your app uses nested coordinators or simple flows, Pathway helps you structure navigation logic effectively.
+With **Pilot**, you can handle navigation stacks, modals, and full-screen covers seamlessly. Whether your app uses nested coordinators or simple flows, Pilot helps you structure navigation logic effectively.
 
 ---
 
@@ -20,7 +20,7 @@ With **Pathway**, you can handle navigation stacks, modals, and full-screen cove
 
 ### Swift Package Manager
 
-To use the Pathway library in a SwiftPM project, add the following line to the dependencies in your Package.swift file:
+To use the Pilot library in a SwiftPM project, add the following line to the dependencies in your Package.swift file:
 
 ```
 .package(url: "https://github.com/vetrek/pilot", from: "1.0.1"),
@@ -36,7 +36,7 @@ Start by creating a `Coordinator` instance and wrapping it in a `CoordinatorView
 
 ```swift
 import SwiftUI
-import Pathway
+import Pilot
 
 @main
 struct YourApp: App {
@@ -54,7 +54,7 @@ Create a custom destination by conforming to the `Destination` protocol:
 
 ```swift
 import SwiftUI
-import Pathway
+import Pilot
 
 struct LoginRoute: Destination {
   let id = UUID()
@@ -70,7 +70,7 @@ struct LoginView: View {
   
   var body: some View {
     VStack {
-      Text("Welcome to Pathway!")
+      Text("Welcome to Pilot!")
       Button("Next") {
         coordinator.push(.anotherRoute)
       }
@@ -153,11 +153,11 @@ coordinator.pop(.index(1))
 
 ## Example App 🧑‍💻
 
-Here’s a quick example of using **Pathway** in a real app:
+Here’s a quick example of using **Pilot** in a real app:
 
 ```swift
 import SwiftUI
-import Pathway
+import Pilot
 
 @main
 struct ExampleApp: App {
@@ -182,7 +182,7 @@ struct LoginView: View {
   
   var body: some View {
     VStack {
-      Text("Welcome to Pathway!")
+      Text("Welcome to Pilot!")
       Button("Next") {
         coordinator.push(.anotherRoute)
       }
