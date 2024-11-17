@@ -93,12 +93,14 @@ final public class Coordinator: ObservableObject {
       
       removeElements(from: targetIndex)
       
-    case .route(let finder):
-      guard let index = finder(path.compactMap { $0.route }) else {
-        print("Route not found in the path.")
-        return
+    case .destination(let destination):
+      if let targetIndex = path.firstIndex(where: { anyRoute in
+        type(of: anyRoute.route) == destination
+      }) {
+        removeElements(from: targetIndex)
+      } else {
+        print("Destination of type \(destination) not found in the path.")
       }
-      removeElements(from: index)
       
     case .index(let index):
       guard index >= 0 && index < path.count else {

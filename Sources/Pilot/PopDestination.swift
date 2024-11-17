@@ -7,6 +7,6 @@ import Foundation
 public enum PopDestination {
   case root
   case back
-  case route(finder: ([any Destination]) -> Int?)
+  case destination(_ destination: any Destination.Type)
   case index(_ index: Int)
 }
