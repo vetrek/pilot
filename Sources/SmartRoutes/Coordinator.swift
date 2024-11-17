@@ -6,22 +6,22 @@ import SwiftUI
 final public class Coordinator: ObservableObject {
   
   /// Holds the root destination of the application.
-  @Published public var root: AnyDestination
+  @Published var root: AnyDestination
   
   /// Holds the current navigation path of the application.
-  @Published public var path = [AnyDestination]()
+  @Published var path = [AnyDestination]()
   
   /// Represents the sheet (modal view) that is currently being displayed.
-  @Published public var sheet: AnyDestination?
+  @Published var sheet: AnyDestination?
   
-  /// Represents a full-screen modal cover currently being displayed.
-  @Published public var fullScreenCover: AnyDestination?
+  /// Represents a full-screen modal cover currently being displayed. 
+  @Published var fullScreenCover: AnyDestination?
   
   /// Track the lastly presented Route
   private var lastPresentedRouteUID: UUID?
   
   /// Optional reference to a parent coordinator.
-  public weak var parentCoordinator: Coordinator?
+  public internal(set) weak var parentCoordinator: Coordinator?
   
   /// Holds closures that are called when navigation views are dismissed.
   private var pushDismissCallbacks = [() -> Void]()
@@ -81,7 +81,7 @@ final public class Coordinator: ObservableObject {
     switch destination {
     case .root:
       // Clear the navigation path entirely as we rely on the root reference
-      path.removeAll()
+      path = []
       pushDismissCallbacks.removeAll()
       
     case .back:

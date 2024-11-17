@@ -29,5 +29,3 @@ extension Destination {
     LoginRoute()
   }
 }
-
-

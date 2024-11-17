@@ -28,13 +28,13 @@ public struct CoordinatorView: View {
   
   /// Initializes a `CoordinatorView` with a closure generating the content.
   /// - Parameter content: A closure that returns an `AnyView`.
-  public init(coordinator: Coordinator) {
-    self.coordinator = coordinator
+  public init(root: any Destination) {
+    self.coordinator = Coordinator(root: root)
   }
   
   /// Private initializer with an optional parent coordinator.
   private init(parentCoordinator: Coordinator, root: any Destination) {
-    self.init(coordinator: .init(parentCoordinator: nil, root: root))
+    self.init(root: root)
     self.parentCoordinator = parentCoordinator
   }
   
