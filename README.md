@@ -42,7 +42,7 @@ import Pilot
 struct YourApp: App {
   var body: some Scene {
     WindowGroup {
-      CoordinatorView(coordinator: Coordinator(root: .login))
+      CoordinatorView(root: .login)
     }
   }
 }
@@ -163,7 +163,7 @@ import Pilot
 struct ExampleApp: App {
   var body: some Scene {
       WindowGroup {
-         CoordinatorView(coordinator: Coordinator(root: .login))
+         CoordinatorView(root: .login)
       }
     }
 }
