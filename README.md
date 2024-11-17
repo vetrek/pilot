@@ -3,7 +3,7 @@
 
 **Pilot** is a lightweight, type-safe, and modular navigation library for SwiftUI. It simplifies complex navigation flows while ensuring your code stays clean, reusable, and maintainable.
 
-With **Pilot**, you can handle navigation stacks, modals, and full-screen covers seamlessly. Whether your app uses nested coordinators or simple flows, Pilot helps you structure navigation logic effectively.
+With **Pilot**, you can handle navigation stacks, modals, and full-screen covers seamlessly. 
 
 ---
 
