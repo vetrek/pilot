@@ -73,7 +73,7 @@ final public class Coordinator: ObservableObject {
   
   /// Pops pages from the navigation stack based on the specified `Pop` type.
   /// - Parameter popType: The type of pop action, which could be to root, a specific route, or an index.
-  public func pop(_ destination: PopDestination) {
+  public func pop(_ destination: PopDestination == .back) {
     guard !path.isEmpty else {
       return
     }
