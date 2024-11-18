@@ -90,9 +90,9 @@ final public class Coordinator: ObservableObject {
       pushDismissCallbacks.removeAll()
       
     case .back:
+      path.removeLast()
       let callbackToInvoke = pushDismissCallbacks.removeLast()
       callbackToInvoke()
-      path.removeLast()
       
     case .destination(let destination):
       if let targetIndex = path.firstIndex(where: { anyRoute in
