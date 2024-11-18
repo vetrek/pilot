@@ -86,17 +86,13 @@ final public class Coordinator: ObservableObject {
     switch destination {
     case .root:
       // Clear the navigation path entirely as we rely on the root reference
-      path = []
+      path.removeAll()
       pushDismissCallbacks.removeAll()
       
     case .back:
-      let targetIndex = max(path.count - 2, 0)
-      guard targetIndex > 0 else {
-        pop(.root)
-        return
-      }
-      
-      removeElements(from: targetIndex)
+      let callbackToInvoke = pushDismissCallbacks.removeLast()
+      callbackToInvoke()
+      path.removeLast()
       
     case .destination(let destination):
       if let targetIndex = path.firstIndex(where: { anyRoute in
