@@ -23,7 +23,7 @@ With **Pilot**, you can handle navigation stacks, modals, and full-screen covers
 To use the Pilot library in a SwiftPM project, add the following line to the dependencies in your Package.swift file:
 
 ```
-.package(url: "https://github.com/vetrek/pilot", from: "1.0.1"),
+.package(url: "https://github.com/vetrek/pilot", from: "1.0.7"),
 ```
 
 ---
