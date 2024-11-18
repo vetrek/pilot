@@ -60,6 +60,11 @@ final public class Coordinator: ObservableObject {
     sheet != nil || fullScreenCover != nil
   }
   
+  /// Indicates whether the current coordinator is presented.
+  public var isPresented: Bool {
+    parentCoordinator?.hasPresentedView == true
+  }
+  
   // MARK: - Push and Pop functions
   
   /// Pushes a new page onto the navigation stack.
