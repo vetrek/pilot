@@ -178,7 +178,13 @@ final public class Coordinator: ObservableObject {
     lastPresentedRouteUID = sheet?.id
   }
   
-  /// Dismisses any modals (sheet or full-screen).
+  /// Dismisses the currently presented modal (sheet or full-screen cover).
+  ///
+  /// - If a modal is presented, it dismisses the last presented modal view.
+  /// - If no modal is found, it delegates the dismissal to the parent coordinator.
+  /// - If no parent coordinator exists, it pops the current navigation stack.
+  ///
+  /// This method ensures proper dismissal in hierarchical navigation structures.
   public func dismiss() {
     if let lastPresentedRouteUID {
       if fullScreenCover?.id == lastPresentedRouteUID {
@@ -188,6 +194,8 @@ final public class Coordinator: ObservableObject {
       }
     } else if let parentCoordinator {
       parentCoordinator.dismiss()
+    } else {
+      pop()
     }
   }
   
@@ -221,6 +229,37 @@ final public class Coordinator: ObservableObject {
     path.contains(where: { $0.route is T })
   }
   
+  /// Checks whether a specific destination is currently being presented as a modal (sheet or full-screen cover).
+  ///
+  /// - Parameter destination: The destination to check for presentation.
+  /// - Returns: `true` if the specified destination is currently being presented, either as a sheet or full-screen cover; `false` otherwise.
+  ///
+  /// This function is useful for determining if a particular modal is active, which can help in coordinating navigation logic
+  /// or avoiding duplicate presentations of the same modal.
+  public func isPresenting<T: Destination>(_ type: T.Type) -> Bool {
+    sheet?.route is T || fullScreenCover?.route is T
+  }
+  
+  /// Determines whether a modal view of a specific type is currently being presented.
+  ///
+  /// This function checks both sheet and full-screen cover presentations to see if either
+  /// matches the specified `View` type.
+  ///
+  /// - Parameter type: The `View` type to check for presentation.
+  /// - Returns: `true` if a modal view (sheet or full-screen cover) of the specified type is currently presented; `false` otherwise.
+  ///
+  /// This is useful for ensuring that a specific modal is active or avoiding duplicate presentations of the same view type.
+  public func isViewPresented<V: View>(_ type: V.Type) -> Bool {
+    if let sheet, sheet.makeView() is V {
+      true
+    } else if let fullScreenCover, fullScreenCover.makeView() is V {
+      true
+    } else if let parentCoordinator {
+      parentCoordinator.isViewPresented(type)
+    } else {
+      false
+    }
+  }
 }
 
 /// `PresentConfiguration` defines the configuration for presenting modal views in the application.
