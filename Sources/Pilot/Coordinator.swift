@@ -143,7 +143,7 @@ final public class Coordinator: ObservableObject {
   ///   - onDismiss: A closure to be called when the sheet is dismissed.
   public func present(
     _ route: some Destination,
-    presentConfiguration: PresentConfiguration = .sheet(navigable: false, detents: nil),
+    presentConfiguration: PresentConfiguration = .sheet(allowsNavigation: false, detents: nil),
     onDismiss: (() -> Void)? = nil
   ) {
     let anyRoute = AnyDestination(route)
@@ -180,11 +180,14 @@ final public class Coordinator: ObservableObject {
   
   /// Dismisses any modals (sheet or full-screen).
   public func dismiss() {
-    guard let lastPresentedRouteUID else { return }
-    if fullScreenCover?.id == lastPresentedRouteUID {
-      dismissFullScreen()
-    } else if sheet?.id == lastPresentedRouteUID {
-      dismissSheet()
+    if let lastPresentedRouteUID {
+      if fullScreenCover?.id == lastPresentedRouteUID {
+        dismissFullScreen()
+      } else if sheet?.id == lastPresentedRouteUID {
+        dismissSheet()
+      }
+    } else if let parentCoordinator {
+      parentCoordinator.dismiss()
     }
   }
   
@@ -194,11 +197,9 @@ final public class Coordinator: ObservableObject {
     if fullScreenCover != nil {
       dismissFullScreen()
     }
-    
     if sheet != nil {
       dismissSheet()
     }
-    
     parentCoordinator?.dismissAll()
   }
   
@@ -222,7 +223,107 @@ final public class Coordinator: ObservableObject {
   
 }
 
+/// `PresentConfiguration` defines the configuration for presenting modal views in the application.
+///
+/// This enum supports two types of modal presentations:
+/// - `fullScreen`: Displays a full-screen modal, with an optional `allowsNavigation` flag
+///   to determine if the modal should support a nested navigation stack.
+/// - `sheet`: Displays a modal sheet, with options for `allowsNavigation` and
+///   `detents` to configure the sheet's behavior and appearance.
+///
+/// ### `allowsNavigation`
+/// The `allowsNavigation` flag determines whether the presented modal will have its own
+/// independent navigation stack:
+/// - **`true`**: The modal view is wrapped in its own `CoordinatorView`, meaning it can
+///   manage its own navigation (e.g., push and pop views) without affecting the main
+///   application's navigation stack.
+/// - **`false`**: The modal presents a single view without its own navigation stack,
+///   ideal for simpler use cases like forms or alerts.
+///
+/// Use these configurations when presenting views modally to specify the desired presentation style
+/// and behavior.
 public enum PresentConfiguration: Sendable {
-  case fullScreen(navigable: Bool = false)
-  case sheet(navigable: Bool = false, detents: Set<PresentationDetent>? = nil)
+  case fullScreen(allowsNavigation: Bool = false)
+  case sheet(allowsNavigation: Bool = false, detents: Set<PresentationDetent>? = nil)
+}
+
+private struct OptionalPresentationDetentsModifier: ViewModifier {
+  var detents: Set<PresentationDetent>?
+  
+  func body(content: Content) -> some View {
+    if let detents = detents {
+      return AnyView(content.presentationDetents(detents))
+    } else {
+      return AnyView(content)
+    }
+  }
+}
+
+private extension View {
+  func optionalPresentationDetents(_ detents: Set<PresentationDetent>?) -> some View {
+    self.modifier(OptionalPresentationDetentsModifier(detents: detents))
+  }
+}
+
+/// A SwiftUI `View` that uses a `Coordinator` for navigation and presentation logic.
+public struct CoordinatorView: View {
+  /// Holds the state for the coordinator.
+  @ObservedObject var coordinator: Coordinator
+  
+  /// An optional reference to a parent coordinator.
+  private var parentCoordinator: Coordinator?
+  
+  /// Initializes a `CoordinatorView` with a closure generating the content.
+  /// - Parameter content: A closure that returns an `AnyView`.
+  public init(root: any Destination) {
+    self.coordinator = Coordinator(root: root)
+  }
+  
+  /// Private initializer with an optional parent coordinator.
+  private init(parentCoordinator: Coordinator, root: any Destination) {
+    self.init(root: root)
+    self.parentCoordinator = parentCoordinator
+  }
+  
+  /// The body of the `CoordinatorView`.
+  public var body: some View {
+    NavigationStack(path: $coordinator.path) {
+      coordinator.root.makeView()
+        .navigationDestination(for: AnyDestination.self) {
+          $0.makeView()
+        }
+        .sheet(item: $coordinator.sheet, content: handleModal)
+        .fullScreenCover(item: $coordinator.fullScreenCover, content: handleModal)
+    }
+    .environmentObject(coordinator)
+    .onAppear {
+      coordinator.parentCoordinator = parentCoordinator
+    }
+  }
+  
+  @ViewBuilder
+  private func handleModal(route: AnyDestination) -> some View {
+    switch coordinator.presentConfigurations[route] {
+    case .fullScreen(let allowsNavigation):
+      if allowsNavigation {
+        CoordinatorView(parentCoordinator: coordinator, root: route.route)
+      } else {
+        route.makeView()
+      }
+      
+    case .sheet(let allowsNavigation, let detents):
+      Group {
+        if allowsNavigation {
+          CoordinatorView(parentCoordinator: coordinator, root: route.route)
+        } else {
+          route.makeView()
+        }
+      }
+      .presentationDragIndicator(.visible)
+      .optionalPresentationDetents(detents)
+      
+    default:
+      EmptyView()
+    }
+  }
 }
