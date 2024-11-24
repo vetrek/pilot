@@ -9,7 +9,7 @@ final public class Coordinator: ObservableObject {
   @Published var root: AnyDestination
   
   /// Holds the current navigation path of the application.
-  @Published public internal(set) var path = [AnyDestination]()
+  @Published var path = [AnyDestination]()
   
   /// Represents the sheet (modal view) that is currently being displayed.
   @Published var sheet: AnyDestination?
@@ -63,6 +63,10 @@ final public class Coordinator: ObservableObject {
   /// Indicates whether the current coordinator is presented.
   public var isPresented: Bool {
     parentCoordinator?.hasPresentedView == true
+  }
+  
+  public var activeDestinations: [any Destination] {
+    path.map(\.route)
   }
   
   // MARK: - Push and Pop functions
