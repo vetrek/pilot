@@ -9,7 +9,7 @@ final public class Coordinator: ObservableObject {
   @Published var root: AnyDestination
   
   /// Holds the current navigation path of the application.
-  @Published var path = [AnyDestination]()
+  @Published public internal(set) var path = [AnyDestination]()
   
   /// Represents the sheet (modal view) that is currently being displayed.
   @Published var sheet: AnyDestination?
