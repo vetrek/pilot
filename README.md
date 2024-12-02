@@ -106,7 +106,10 @@ coordinator.present(.login, presentConfiguration: .sheet(navigable: true)) {
 ```
 
 #### Dismissing Modals
-You can dismiss the currently presented modal:
+Handles dismissals in navigation hierarchies:
+-	Dismisses the last presented modal (sheet or full-screen cover).
+-	Delegates to the parent coordinator if no modal is active.
+-	Pops the navigation stack as a fallback.
 
 ```swift
 coordinator.dismiss()
