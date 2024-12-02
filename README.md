@@ -3,7 +3,7 @@
 
 **Pilot** is a lightweight, type-safe, and modular navigation library for SwiftUI. It simplifies complex navigation flows while ensuring your code stays clean, reusable, and maintainable.
 
-With **Pilot**, you can handle navigation stacks, modals, and full-screen covers seamlessly. 
+With **Pilot**, you can seamlessly handle navigation stacks, modals, and full-screen covers. 
 
 ---
 
@@ -11,7 +11,7 @@ With **Pilot**, you can handle navigation stacks, modals, and full-screen covers
 
 - **Centralized Navigation Logic**: Manage navigation stack, sheets, and full-screen modals from a single `Coordinator`.
 - **Type-Safe Destinations**: Define navigation destinations using the `Destination` protocol for strongly typed and reusable routes.
-- **Flexible Presentation Styles**: Support for both `sheet` and `fullScreen` configurations with customizable detents.
+- **Flexible Presentation Styles**: Support both `sheet` and `fullScreen` configurations with customizable detents.
 - **Dismissal Callbacks**: Execute specific actions when navigation views are dismissed.
 
 ---
@@ -115,7 +115,7 @@ Handles dismissals in navigation hierarchies:
 coordinator.dismiss()
 ```
 
-Dismiss all modals and reset to root:
+Dismisses all presented views (sheets and full-screen covers) and recursively dismisses in the parent coordinator if available.
 
 ```swift
 coordinator.dismissAll()
