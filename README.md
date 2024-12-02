@@ -115,7 +115,7 @@ Handles dismissals in navigation hierarchies:
 coordinator.dismiss()
 ```
 
-Dismisses all presented views (sheets and full-screen covers) and recursively dismisses in the parent coordinator if available.
+Dismisses all presented views (sheets and full-screen covers) and recursively dismisses the parent coordinator if available.
 
 ```swift
 coordinator.dismissAll()
