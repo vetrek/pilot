@@ -307,7 +307,7 @@ private extension View {
 /// A SwiftUI `View` that uses a `Coordinator` for navigation and presentation logic.
 public struct CoordinatorView: View {
   /// Holds the state for the coordinator.
-  @ObservedObject var coordinator: Coordinator
+  @StateObject var coordinator: Coordinator
   
   /// An optional reference to a parent coordinator.
   private var parentCoordinator: Coordinator?
@@ -315,7 +315,7 @@ public struct CoordinatorView: View {
   /// Initializes a `CoordinatorView` with a closure generating the content.
   /// - Parameter content: A closure that returns an `AnyView`.
   public init(root: any Destination) {
-    self.coordinator = Coordinator(root: root)
+    self._coordinator = StateObject(wrappedValue: Coordinator(root: root)) 
   }
   
   /// Private initializer with an optional parent coordinator.
