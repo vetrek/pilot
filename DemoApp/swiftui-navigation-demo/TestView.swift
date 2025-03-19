@@ -21,17 +21,17 @@ struct ExampleView: View {
   
   var body: some View {
     Text(#"Enter the title and press "search""#)
-      .navigationBarTitle(title)
-      .toolbar {
-        if coordinator.pagesCount > 0 {
-          ToolbarItem {
-            Button("Root") {
-              isSearchFieldFocused = false
-              coordinator.pop(.root)
-            }
-          }
-        }
-      }
+//      .navigationBarTitle(title)
+//      .toolbar {
+//        if coordinator.pagesCount > 0 {
+//          ToolbarItem {
+//            Button("Root") {
+//              isSearchFieldFocused = false
+//              coordinator.pop(.root)
+//            }
+//          }
+//        }
+//      }
       .searchable(text: $text, isPresented: $isSearchPresented)
       .onSubmit(of: .search) {
         coordinator.push(.example(title: text))

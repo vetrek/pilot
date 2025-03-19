@@ -335,6 +335,8 @@ public struct CoordinatorView: View {
         .modify {
 #if os(iOS)
           $0.fullScreenCover(item: $coordinator.fullScreenCover, content: handleModal)
+#else
+          $0
 #endif
         }
 
