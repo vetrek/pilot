@@ -5,23 +5,76 @@
 import Foundation
 import SwiftUI
 
-//public extension View {
-//  /// Attaches a `Coordinator` to the view for managing navigation.
-//  ///
-//  /// - Returns: A view with a `Coordinator` applied.
-//  func addCoordinator() -> some View {
-//    modifier(CoordinatorViewModifier())
-//  }
-//}
-//
-//private struct CoordinatorViewModifier: ViewModifier {
-//  /// Embeds the view in a `CoordinatorView` for navigation handling.
-//  ///
-//  /// - Parameter content: The content view.
-//  /// - Returns: A view wrapped with `CoordinatorView`.
-//  func body(content: Content) -> some View {
-//    CoordinatorView(coordinator: Coordinator()) {
-//      AnyView(content)
-//    }
-//  }
-//}
+enum OperatingSystem {
+  case macOS
+  case iOS
+  case tvOS
+  case watchOS
+
+#if os(macOS)
+  static let current = macOS
+#elseif os(iOS)
+  static let current = iOS
+#elseif os(tvOS)
+  static let current = tvOS
+#elseif os(watchOS)
+  static let current = watchOS
+#else
+#error("Unsupported platform")
+#endif
+}
+
+extension View {
+  // https://stackoverflow.com/questions/61386877/in-swiftui-is-it-possible-to-use-a-modifier-only-for-a-certain-os-target/62099616#62099616
+  /**
+   Conditionally apply modifiers depending on the target operating system.
+
+   ```
+   struct ContentView: View {
+   var body: some View {
+   Text("Unicorn")
+   .font(.system(size: 10))
+   .ifOS(.macOS, .tvOS) {
+   $0.font(.system(size: 20))
+   }
+   }
+   }
+   ```
+   */
+  @ViewBuilder
+  func ifOS<Content: View>(
+    _ operatingSystems: OperatingSystem...,
+    modifier: (Self) -> Content
+  ) -> some View {
+    if operatingSystems.contains(OperatingSystem.current) {
+      modifier(self)
+    } else {
+      self
+    }
+  }
+
+  /**
+   Modify the view in a closure. This can be useful when you need to conditionally apply a modifier that is unavailable on certain platforms.
+
+   For example, imagine this code needing to run on macOS too where `View#actionSheet()` is not available:
+
+   ```
+   struct ContentView: View {
+   var body: some View {
+   Text("Unicorn")
+   .modify {
+   #if os(iOS)
+   $0.actionSheet(…)
+   #else
+   $0
+   #endif
+   }
+   }
+   }
+   ```
+   */
+  func modify<T: View>(@ViewBuilder modifier: (Self) -> T) -> T {
+    modifier(self)
+  }
+
+}
