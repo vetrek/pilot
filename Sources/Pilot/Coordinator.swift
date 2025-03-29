@@ -330,6 +330,7 @@ public struct CoordinatorView: View {
       coordinator.root.makeView()
         .navigationDestination(for: AnyDestination.self) {
           $0.makeView()
+            .environmentObject(coordinator)
         }
         .sheet(item: $coordinator.sheet, content: handleModal)
         .modify {
