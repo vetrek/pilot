@@ -1,38 +1,6 @@
+# Pilot 🚀
 
-# Pilot
-
-**Pilot** is a lightweight, type-safe, and modular navigation library for SwiftUI. It simplifies complex navigation flows while ensuring your code stays clean, reusable, and maintainable.
-
-With **Pilot**, you can seamlessly handle navigation stacks, modals, and full-screen covers. 
-
----
-
-## Key Features ✨
-
-- **Centralized Navigation Logic**: Manage navigation stack, sheets, and full-screen modals from a single `Coordinator`.
-- **Type-Safe Destinations**: Define navigation destinations using the `Destination` protocol for strongly typed and reusable routes.
-- **Flexible Presentation Styles**: Support both `sheet` and `fullScreen` configurations with customizable detents.
-- **Dismissal Callbacks**: Execute specific actions when navigation views are dismissed.
-
----
-
-## Installation ⚙️
-
-### Swift Package Manager
-
-To use the Pilot library in a SwiftPM project, add the following line to the dependencies in your Package.swift file:
-
-```
-.package(url: "https://github.com/vetrek/pilot", from: "1.0.7"),
-```
-
----
-
-## Usage 🛠️
-
-### 1. **Setting Up a Coordinator**
-
-Start by creating a `Coordinator` instance and wrapping it in a `CoordinatorView`:
+A lightweight, type-safe navigation library for SwiftUI that makes complex navigation flows simple and maintainable.
 
 ```swift
 import SwiftUI
@@ -46,191 +14,125 @@ struct YourApp: App {
     }
   }
 }
+
+struct LoginView: View {
+  @EnvironmentObject private var coordinator: Coordinator
+
+  var body: some View {
+    VStack {
+      Text("Welcome to Pilot!")
+      Button("Next") {
+        coordinator.push(.dashboard)
+      }
+    }
+  }
+}
 ```
 
-### 2. **Defining a Destination**
+## Features ✨
 
-Create a custom destination by conforming to the `Destination` protocol:
+- **Type-Safe Navigation**: Define destinations with the `Destination` protocol
+- **Centralized Control**: Manage navigation from a single `Coordinator`
+- **Flexible Presentation**: Support for sheets, full-screen modals, and navigation stacks
+- **Clean API**: Simple methods for push, pop, present, and dismiss
+
+## Quick Start
+
+1. **Add Pilot** to your project:
 
 ```swift
-import SwiftUI
-import Pilot
+.package(url: "https://github.com/vetrek/pilot", from: "1.0.7")
+```
 
+2. **Define a Destination**:
+
+```swift
 struct LoginRoute: Destination {
   let id = UUID()
-  
+
   @MainActor
   func makeView() -> some View {
     LoginView()
   }
 }
-
-struct LoginView: View {
-  @EnvironmentObject private var coordinator: Coordinator
-  
-  var body: some View {
-    VStack {
-      Text("Welcome to Pilot!")
-      Button("Next") {
-        coordinator.push(.anotherRoute)
-      }
-    }
-  }
-}
-
-extension Destination where Self == LoginRoute {
-  static var login: Self {
-    LoginRoute()
-  }
-}
 ```
 
-### 3. **Navigating Between Screens**
-
-#### Pushing a New Screen
-To navigate to a new screen:
+3. **Navigate**:
 
 ```swift
-coordinator.push(.login) {
-  print("Login screen dismissed")
-}
-```
+// Push a new screen
+coordinator.push(.dashboard)
 
-#### Presenting a Modal
-To present a sheet or full-screen modal:
+// Present a sheet
+coordinator.present(.settings, presentConfiguration: .sheet())
 
-```swift
-coordinator.present(.login, presentConfiguration: .sheet(navigable: true)) {
-  print("Sheet dismissed")
-}
-```
+// Pop back
+coordinator.pop(.back)
 
-#### Dismissing Modals
-Handles dismissals in navigation hierarchies:
--	Dismisses the last presented modal (sheet or full-screen cover).
--	Delegates to the parent coordinator if no modal is active.
--	Pops the navigation stack as a fallback.
-
-```swift
+// Dismiss modals
 coordinator.dismiss()
 ```
 
-Dismisses all presented views (sheets and full-screen covers) and recursively dismisses the parent coordinator if available.
+## Advanced Usage
+
+### Custom Navigation
 
 ```swift
-coordinator.dismissAll()
-```
-
-#### Popping the Navigation Stack
-To pop to a previous screen:
-
-```swift
-coordinator.pop(.back)
-```
-
-Pop to the root:
-
-```swift
+// Pop to root
 coordinator.pop(.root)
-```
 
----
-
-### Custom Pop Logic
-
-Pop to a specific route using a custom finder:
-
-```swift
+// Pop to specific screen
 coordinator.pop(.destination(LoginRoute.self))
+
+// Present with custom configuration
+coordinator.present(
+  .profile,
+  presentConfiguration: .sheet(allowsNavigation: true, detents: [.medium])
+)
 ```
 
-Pop to a specific index:
+### Nested Navigation
 
 ```swift
-coordinator.pop(.index(1))
-```
-
----
-
-## Example App 🧑‍💻
-
-Here’s a quick example of using **Pilot** in a real app:
-
-```swift
-import SwiftUI
-import Pilot
-
-@main
-struct ExampleApp: App {
-  var body: some Scene {
-      WindowGroup {
-         CoordinatorView(root: .login)
-      }
-    }
-}
-
-struct LoginRoute: Destination {
-  let id = UUID()
-  
-  @MainActor
-  func makeView() -> some View {
-    LoginView()
-  }
-}
-
-struct LoginView: View {
+struct DashboardView: View {
   @EnvironmentObject private var coordinator: Coordinator
-  
+
   var body: some View {
-    VStack {
-      Text("Welcome to Pilot!")
-      Button("Next") {
-        coordinator.push(.anotherRoute)
+    NavigationStack {
+      List {
+        Button("Settings") {
+          coordinator.present(.settings)
+        }
+        Button("Profile") {
+          coordinator.push(.profile)
+        }
       }
     }
   }
 }
-
-extension Destination where Self == LoginRoute {
-  static var login: Self {
-    LoginRoute()
-  }
-}
-
-struct AnotherRoute: Destination {
-  let id = UUID()
-  
-  @MainActor
-  func makeView() -> some View {
-    Text("This is another screen!")
-  }
-}
-
-extension Destination where Self == AnotherRoute {
-  static var anotherRoute: Self {
-    AnotherRoute()
-  }
-}
-
 ```
 
----
+## Requirements
 
-## Contributing 🤝
+- iOS 15.0+
+- macOS 12.0+
+- watchOS 8.0+
+- tvOS 15.0+
 
-Contributions are welcome! Feel free to:
-- Report issues.
-- Submit pull requests.
-- Suggest new features.
+## Installation
 
----
+### Swift Package Manager
 
-## License 📜
+```swift
+dependencies: [
+  .package(url: "https://github.com/vetrek/pilot", from: "1.0.7")
+]
+```
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+## Contributing
 
----
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## Support 💬
+## License
 
-For questions or support, feel free to open an issue.
+Pilot is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
