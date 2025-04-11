@@ -332,15 +332,14 @@ public struct CoordinatorView: View {
           $0.makeView()
             .environmentObject(coordinator)
         }
-        .sheet(item: $coordinator.sheet, content: handleModal)
-        .modify {
+    }
+    .sheet(item: $coordinator.sheet, content: handleModal)
+    .modify {
 #if os(iOS)
-          $0.fullScreenCover(item: $coordinator.fullScreenCover, content: handleModal)
+      $0.fullScreenCover(item: $coordinator.fullScreenCover, content: handleModal)
 #else
-          $0
+      $0
 #endif
-        }
-
     }
     .environmentObject(coordinator)
     .onAppear {

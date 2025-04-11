@@ -37,7 +37,8 @@ struct ExampleView: View {
         coordinator.push(.example(title: text))
       }
       .onTapGesture {
-        coordinator.push(.example(title: "asdf"))
+//        coordinator.push(.example(title: "asdf"))
+        coordinator.present(.example(title: "asdf"))
       }
       .focused($isSearchFieldFocused)
   }
