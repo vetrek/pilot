@@ -20,27 +20,15 @@ struct ExampleView: View {
   @FocusState private var isSearchFieldFocused: Bool
   
   var body: some View {
-    Text(#"Enter the title and press "search""#)
-//      .navigationBarTitle(title)
-//      .toolbar {
-//        if coordinator.pagesCount > 0 {
-//          ToolbarItem {
-//            Button("Root") {
-//              isSearchFieldFocused = false
-//              coordinator.pop(.root)
-//            }
-//          }
-//        }
-//      }
-      .searchable(text: $text, isPresented: $isSearchPresented)
-      .onSubmit(of: .search) {
+    VStack {
+      Button("Push") {
         coordinator.push(.example(title: text))
       }
-      .onTapGesture {
-//        coordinator.push(.example(title: "asdf"))
-        coordinator.present(.example(title: "asdf"))
+
+      Button("Present") {
+        coordinator.present(.example(title: text))
       }
-      .focused($isSearchFieldFocused)
+    }
   }
 }
 
