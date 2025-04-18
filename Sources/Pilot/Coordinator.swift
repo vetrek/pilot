@@ -330,16 +330,15 @@ public struct CoordinatorView: View {
       coordinator.root.makeView()
         .navigationDestination(for: AnyDestination.self) {
           $0.makeView()
+#if os(macOS)
             .sheet(item: $coordinator.sheet, content: handleModal)
-            .modify {
-#if os(iOS)
-              $0.fullScreenCover(item: $coordinator.fullScreenCover, content: handleModal)
-#else
-              $0
-#endif
-            }
             .environmentObject(coordinator)
+#endif
         }
+#if os(iOS)
+        .sheet(item: $coordinator.sheet, content: handleModal)
+        .fullScreenCover(item: $coordinator.fullScreenCover, content: handleModal)
+#endif
     }
     .environmentObject(coordinator)
     .onAppear {
