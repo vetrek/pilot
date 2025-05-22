@@ -216,9 +216,13 @@ final public class Coordinator: ObservableObject {
   ///   - root: The new root destination.
   ///   - popAll: Whether to clear the stack.
   public func setRoot(_ root: any Destination, popAll: Bool = false) {
-    self.root = AnyDestination(root)
-    if popAll {
-      pop(.root)
+    var transaction = Transaction(animation: .none)
+    transaction.disablesAnimations = true
+    withTransaction(transaction) {
+      self.root = AnyDestination(root)
+      if popAll {
+        pop(.root)
+      }
     }
   }
   
