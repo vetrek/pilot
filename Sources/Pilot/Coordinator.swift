@@ -80,6 +80,27 @@ final public class Coordinator: ObservableObject {
     pushDismissCallbacks.append(onDismiss ?? {})
   }
   
+  /// Replaces the top destination with a new one, invoking the previous top's dismiss callback.
+  ///
+  /// Use this to "push and silently remove the previous Destination" so that a stack like
+  /// A -> B becomes A -> C when calling `replaceTop(with: C)`.
+  /// - Parameters:
+  ///   - route: The new destination to place on top of the stack.
+  ///   - onDismiss: An optional closure to be called when this new destination is later popped.
+  public func replaceTop(with route: some Destination, onDismiss: (() -> Void)? = nil) {
+    guard !path.isEmpty else {
+      // If there's nothing to replace, just push normally.
+      push(route, onDismiss: onDismiss)
+      return
+    }
+    // Remove the current top and invoke its dismiss callback immediately.
+    pop()
+
+    // Append the replacement destination and its dismiss callback.
+    path.append(AnyDestination(route))
+    pushDismissCallbacks.append(onDismiss ?? {})
+  }
+  
   /// Pops pages from the navigation stack based on the specified `Pop` type.
   /// - Parameter popType: The type of pop action, which could be to root, a specific route, or an index.
   public func pop(_ destination: PopDestination = .back) {
@@ -376,3 +397,4 @@ public struct CoordinatorView: View {
     }
   }
 }
+
