@@ -100,54 +100,23 @@ final public class Coordinator: ObservableObject {
       return
     }
 
-    #if canImport(QuartzCore)
-    CATransaction.begin()
-    CATransaction.setCompletionBlock { [weak self] in
-      guard let self = self else { return }
-      // Perform the silent removal after the push animation completes
-      if self.path.count >= 2 {
-        var transaction = Transaction(animation: .none)
-        transaction.disablesAnimations = true
-        withTransaction(transaction) {
-          let removalIndex = self.path.count - 2
-          self.path.remove(at: removalIndex)
-
-          if self.pushDismissCallbacks.count >= 2 {
-            let oldTopCallbackIndex = self.pushDismissCallbacks.count - 2
-            let oldTopCallback = self.pushDismissCallbacks.remove(at: oldTopCallbackIndex)
-            oldTopCallback()
-          }
-        }
-      }
-    }
-
-    withAnimation(.default) {
-      push(route, onDismiss: onDismiss)
-    }
-    CATransaction.commit()
-    #else
     // Fallback: defer removal to the next run loop tick
-    withAnimation(.default) {
-      push(route, onDismiss: onDismiss)
-    }
-    DispatchQueue.main.async { [weak self] in
-      guard let self = self else { return }
-      if self.path.count >= 2 {
-        var transaction = Transaction(animation: .none)
-        transaction.disablesAnimations = true
-        withTransaction(transaction) {
-          let removalIndex = self.path.count - 2
-          self.path.remove(at: removalIndex)
+    push(route, onDismiss: onDismiss)
 
-          if self.pushDismissCallbacks.count >= 2 {
-            let oldTopCallbackIndex = self.pushDismissCallbacks.count - 2
-            let oldTopCallback = self.pushDismissCallbacks.remove(at: oldTopCallbackIndex)
-            oldTopCallback()
-          }
+    if self.path.count >= 2 {
+      var transaction = Transaction(animation: .none)
+      transaction.disablesAnimations = true
+      withTransaction(transaction) {
+        let removalIndex = self.path.count - 2
+        self.path.remove(at: removalIndex)
+
+        if self.pushDismissCallbacks.count >= 2 {
+          let oldTopCallbackIndex = self.pushDismissCallbacks.count - 2
+          let oldTopCallback = self.pushDismissCallbacks.remove(at: oldTopCallbackIndex)
+          oldTopCallback()
         }
       }
     }
-    #endif
   }
 
   /// Pops pages from the navigation stack based on the specified `Pop` type.
