@@ -103,17 +103,21 @@ final public class Coordinator: ObservableObject {
     // Fallback: defer removal to the next run loop tick
     push(route, onDismiss: onDismiss)
 
-    if self.path.count >= 2 {
-      var transaction = Transaction(animation: .none)
-      transaction.disablesAnimations = true
-      withTransaction(transaction) {
-        let removalIndex = self.path.count - 2
-        self.path.remove(at: removalIndex)
+    // Add defer f
+    DispatchQueue.main.async { [weak self] in
+      guard let self = self else { return }
+      if self.path.count >= 2 {
+        var transaction = Transaction(animation: .none)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+          let removalIndex = self.path.count - 2
+          self.path.remove(at: removalIndex)
 
-        if self.pushDismissCallbacks.count >= 2 {
-          let oldTopCallbackIndex = self.pushDismissCallbacks.count - 2
-          let oldTopCallback = self.pushDismissCallbacks.remove(at: oldTopCallbackIndex)
-          oldTopCallback()
+          if self.pushDismissCallbacks.count >= 2 {
+            let oldTopCallbackIndex = self.pushDismissCallbacks.count - 2
+            let oldTopCallback = self.pushDismissCallbacks.remove(at: oldTopCallbackIndex)
+            oldTopCallback()
+          }
         }
       }
     }
