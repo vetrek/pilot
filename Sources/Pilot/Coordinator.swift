@@ -17,6 +17,9 @@ final public class Coordinator: ObservableObject {
   /// Represents a full-screen modal cover currently being displayed. 
   @Published var fullScreenCover: AnyDestination?
   
+  /// Optional navigation tint color applied to items (e.g., back button, bar buttons)
+  @Published public var navigationTintColor: Color?
+  
   /// Track the lastly presented Route
   private var lastPresentedRouteUID: UUID?
   
@@ -364,6 +367,7 @@ public struct CoordinatorView: View {
         .sheet(item: $coordinator.sheet, content: handleModal)
         .fullScreenCover(item: $coordinator.fullScreenCover, content: handleModal)
 #endif
+        .modifier(NavigationTintApplier(tint: coordinator.navigationTintColor))
     }
     .environmentObject(coordinator)
     .onAppear {
@@ -398,3 +402,13 @@ public struct CoordinatorView: View {
   }
 }
 
+private struct NavigationTintApplier: ViewModifier {
+  let tint: Color?
+  func body(content: Content) -> some View {
+    if let tint {
+      content.tint(tint)
+    } else {
+      content
+    }
+  }
+}
