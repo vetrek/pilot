@@ -91,17 +91,33 @@ final public class Coordinator: ObservableObject {
   ///   - route: The new destination to place on top of the stack.
   ///   - onDismiss: An optional closure to be called when this new destination is later popped.
   public func replaceTop(with route: some Destination, onDismiss: (() -> Void)? = nil) {
+    // If there's nothing to replace, just push normally to get correct animation semantics.
     guard !path.isEmpty else {
-      // If there's nothing to replace, just push normally.
       push(route, onDismiss: onDismiss)
       return
     }
-    // Remove the current top and invoke its dismiss callback immediately.
-    pop()
 
-    // Append the replacement destination and its dismiss callback.
-    path.append(AnyDestination(route))
-    pushDismissCallbacks.append(onDismiss ?? {})
+    // 1) Push the new route to trigger the forward push animation.
+    push(route, onDismiss: onDismiss)
+
+    // 2) Silently remove the previous page (now the second-to-last element) without affecting the new top.
+    //    We need to remove its associated dismiss callback and invoke it immediately.
+    //    Current stack looks like: [..., OLD_TOP, NEW_TOP]
+    //    Current callbacks look like: [..., oldTopCallback, newTopCallback]
+    //    We want to remove OLD_TOP and its callback, leaving NEW_TOP and newTopCallback intact.
+    if path.count >= 2 {
+      // Remove the old top element (index count-2)
+      let removalIndex = path.count - 2
+      path.remove(at: removalIndex)
+
+      // Remove and invoke the old top's dismiss callback.
+      // It is located just before the last callback we appended for the new top.
+      if pushDismissCallbacks.count >= 2 {
+        let oldTopCallbackIndex = pushDismissCallbacks.count - 2
+        let oldTopCallback = pushDismissCallbacks.remove(at: oldTopCallbackIndex)
+        oldTopCallback()
+      }
+    }
   }
   
   /// Pops pages from the navigation stack based on the specified `Pop` type.
