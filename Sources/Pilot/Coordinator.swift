@@ -367,8 +367,8 @@ public struct CoordinatorView: View {
         .sheet(item: $coordinator.sheet, content: handleModal)
         .fullScreenCover(item: $coordinator.fullScreenCover, content: handleModal)
 #endif
-        .modifier(NavigationTintApplier(tint: coordinator.navigationTintColor))
     }
+    .tint(coordinator.navigationTintColor)
     .environmentObject(coordinator)
     .onAppear {
       coordinator.parentCoordinator = parentCoordinator
