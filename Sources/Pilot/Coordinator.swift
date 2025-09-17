@@ -105,7 +105,7 @@ final public class Coordinator: ObservableObject {
     CATransaction.setCompletionBlock { [weak self] in
       guard let self else { return }
       // Perform the silent removal after the push animation completes
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
         if self.path.count >= 2 {
           var transaction = Transaction(animation: .none)
           transaction.disablesAnimations = true
