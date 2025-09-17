@@ -1,6 +1,10 @@
 import Foundation
 import SwiftUI
 
+#if canImport(QuartzCore)
+import QuartzCore
+#endif
+
 /// `Coordinator` is a class responsible for managing the navigation and presentation logic in the application.
 @MainActor
 final public class Coordinator: ObservableObject {
@@ -96,12 +100,36 @@ final public class Coordinator: ObservableObject {
       return
     }
 
-    // 1) Animate the push
+    #if canImport(QuartzCore)
+    CATransaction.begin()
+    CATransaction.setCompletionBlock { [weak self] in
+      guard let self = self else { return }
+      // Perform the silent removal after the push animation completes
+      if self.path.count >= 2 {
+        var transaction = Transaction(animation: .none)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+          let removalIndex = self.path.count - 2
+          self.path.remove(at: removalIndex)
+
+          if self.pushDismissCallbacks.count >= 2 {
+            let oldTopCallbackIndex = self.pushDismissCallbacks.count - 2
+            let oldTopCallback = self.pushDismissCallbacks.remove(at: oldTopCallbackIndex)
+            oldTopCallback()
+          }
+        }
+      }
+    }
+
     withAnimation(.default) {
       push(route, onDismiss: onDismiss)
     }
-
-    // 2) Defer the silent removal to the next run loop and disable animations for it
+    CATransaction.commit()
+    #else
+    // Fallback: defer removal to the next run loop tick
+    withAnimation(.default) {
+      push(route, onDismiss: onDismiss)
+    }
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
       if self.path.count >= 2 {
@@ -119,6 +147,7 @@ final public class Coordinator: ObservableObject {
         }
       }
     }
+    #endif
   }
 
   /// Pops pages from the navigation stack based on the specified `Pop` type.
