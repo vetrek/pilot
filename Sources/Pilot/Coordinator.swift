@@ -103,19 +103,21 @@ final public class Coordinator: ObservableObject {
     #if canImport(QuartzCore)
     CATransaction.begin()
     CATransaction.setCompletionBlock { [weak self] in
-      guard let self = self else { return }
+      guard let self else { return }
       // Perform the silent removal after the push animation completes
-      if self.path.count >= 2 {
-        var transaction = Transaction(animation: .none)
-        transaction.disablesAnimations = true
-        withTransaction(transaction) {
-          let removalIndex = self.path.count - 2
-          self.path.remove(at: removalIndex)
+      DispatchQueue.main.async {
+        if self.path.count >= 2 {
+          var transaction = Transaction(animation: .none)
+          transaction.disablesAnimations = true
+          withTransaction(transaction) {
+            let removalIndex = self.path.count - 2
+            self.path.remove(at: removalIndex)
 
-          if self.pushDismissCallbacks.count >= 2 {
-            let oldTopCallbackIndex = self.pushDismissCallbacks.count - 2
-            let oldTopCallback = self.pushDismissCallbacks.remove(at: oldTopCallbackIndex)
-            oldTopCallback()
+            if self.pushDismissCallbacks.count >= 2 {
+              let oldTopCallbackIndex = self.pushDismissCallbacks.count - 2
+              let oldTopCallback = self.pushDismissCallbacks.remove(at: oldTopCallbackIndex)
+              oldTopCallback()
+            }
           }
         }
       }
