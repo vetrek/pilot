@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import Combine
 
 #if canImport(QuartzCore)
 import QuartzCore
@@ -30,8 +31,8 @@ final public class Coordinator: ObservableObject {
   /// Optional reference to a parent coordinator.
   public internal(set) weak var parentCoordinator: Coordinator?
   
-  /// Holds closures that are called when navigation views are dismissed.
-  private var pushDismissCallbacks = [() -> Void]()
+  /// Holds closures that are called when navigation views are dismissed, keyed by destination ID.
+  private var pushDismissCallbacksByID: [UUID: () -> Void] = [:]
   
   /// Holds closures that are called when sheet views are dismissed.
   private var sheetDismissCallbacks = [() -> Void]()
@@ -42,10 +43,13 @@ final public class Coordinator: ObservableObject {
   /// Stores configuration for presented routes.
   lazy var presentConfigurations = [AnyDestination: PresentConfiguration]()
   
+  private var cancellables = Set<AnyCancellable>()
+  
   /// Initializes the coordinator with a root destination.
   /// - Parameter root: The initial root destination.
   public init(root: any Destination) {
     self.root = AnyDestination(root)
+    observePathChanges()
   }
   
   /// Initializes a new coordinator with an optional parent and root destination.
@@ -55,6 +59,23 @@ final public class Coordinator: ObservableObject {
   init(parentCoordinator: Coordinator? = nil, root: any Destination) {
     self.parentCoordinator = parentCoordinator
     self.root = AnyDestination(root)
+    observePathChanges()
+  }
+  
+  private func observePathChanges() {
+    $path
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] newPath in
+        guard let self else { return }
+        let newIDs = Set(newPath.map(\.id))
+        let removedIDs = Set(self.pushDismissCallbacksByID.keys).subtracting(newIDs)
+        for id in removedIDs {
+          if let callback = self.pushDismissCallbacksByID.removeValue(forKey: id) {
+            callback()
+          }
+        }
+      }
+      .store(in: &cancellables)
   }
   
   /// Returns the number of pages in the navigation stack.
@@ -83,8 +104,9 @@ final public class Coordinator: ObservableObject {
   ///   - page: The page to be pushed.
   ///   - onDismiss: A closure to be called when the page is popped.
   public func push(_ route: some Destination, onDismiss: (() -> Void)? = nil) {
-    path.append(AnyDestination(route))
-    pushDismissCallbacks.append(onDismiss ?? {})
+    let any = AnyDestination(route)
+    path.append(any)
+    pushDismissCallbacksByID[any.id] = onDismiss ?? {}
   }
   
   /// Replaces the top destination with a new one, invoking the previous top's dismiss callback.
@@ -112,12 +134,6 @@ final public class Coordinator: ObservableObject {
           withTransaction(transaction) {
             let removalIndex = self.path.count - 2
             self.path.remove(at: removalIndex)
-
-            if self.pushDismissCallbacks.count >= 2 {
-              let oldTopCallbackIndex = self.pushDismissCallbacks.count - 2
-              let oldTopCallback = self.pushDismissCallbacks.remove(at: oldTopCallbackIndex)
-              oldTopCallback()
-            }
           }
         }
       }
@@ -140,12 +156,6 @@ final public class Coordinator: ObservableObject {
         withTransaction(transaction) {
           let removalIndex = self.path.count - 2
           self.path.remove(at: removalIndex)
-
-          if self.pushDismissCallbacks.count >= 2 {
-            let oldTopCallbackIndex = self.pushDismissCallbacks.count - 2
-            let oldTopCallback = self.pushDismissCallbacks.remove(at: oldTopCallbackIndex)
-            oldTopCallback()
-          }
         }
       }
     }
@@ -163,12 +173,9 @@ final public class Coordinator: ObservableObject {
     case .root:
       // Clear the navigation path entirely as we rely on the root reference
       path.removeAll()
-      pushDismissCallbacks.removeAll()
       
     case .back:
       path.removeLast()
-      let callbackToInvoke = pushDismissCallbacks.removeLast()
-      callbackToInvoke()
       
     case .destination(let destination):
       if let targetIndex = path.firstIndex(where: { anyRoute in
@@ -200,11 +207,7 @@ final public class Coordinator: ObservableObject {
     
     guard elementsToRemove > 0 else { return }
     
-    let callbacksToInvoke = pushDismissCallbacks.suffix(elementsToRemove)
-    pushDismissCallbacks.removeLast(elementsToRemove)
     path.removeLast(elementsToRemove)
-    
-    callbacksToInvoke.forEach { $0() }
   }
   
   // MARK: - Present and Dismiss functions
