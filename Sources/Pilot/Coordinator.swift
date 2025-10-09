@@ -121,15 +121,45 @@ final public class Coordinator: ObservableObject {
       push(route, onDismiss: onDismiss)
       return
     }
-    let any = AnyDestination(route)
-    withAnimation(.default) {
-      var transaction = Transaction()
-      transaction.disablesAnimations = false     // keep push-style animation
-      withTransaction(transaction) {
-        path[path.count - 1] = any          // replace in place
-        pushDismissCallbacksByID[any.id] = onDismiss ?? {}
+
+    #if canImport(QuartzCore)
+    CATransaction.begin()
+    CATransaction.setCompletionBlock { [weak self] in
+      guard let self else { return }
+      // Perform the silent removal after the push animation completes
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+        if self.path.count >= 2 {
+          var transaction = Transaction(animation: .none)
+          transaction.disablesAnimations = true
+          withTransaction(transaction) {
+            let removalIndex = self.path.count - 2
+            self.path.remove(at: removalIndex)
+          }
+        }
       }
     }
+
+    withAnimation(.default) {
+      push(route, onDismiss: onDismiss)
+    }
+    CATransaction.commit()
+    #else
+    // Fallback: defer removal to the next run loop tick
+    withAnimation(.default) {
+      push(route, onDismiss: onDismiss)
+    }
+    DispatchQueue.main.async { [weak self] in
+      guard let self = self else { return }
+      if self.path.count >= 2 {
+        var transaction = Transaction(animation: .none)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+          let removalIndex = self.path.count - 2
+          self.path.remove(at: removalIndex)
+        }
+      }
+    }
+    #endif
   }
 
   /// Pops pages from the navigation stack based on the specified `Pop` type.
